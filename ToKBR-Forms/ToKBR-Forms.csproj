@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>ToKBR.Forms</RootNamespace>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyVersion>8.23.12.05</AssemblyVersion>
+    <FileVersion>8.23.12.05</FileVersion>
+    <Company>CIBANK</Company>
+    <Copyright>2022-2023 Dmitrii Evdokimov</Copyright>
+    <NeutralLanguage>ru-RU</NeutralLanguage>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release call $(ProjectDir)PostBuild.bat" Condition=" '$(OS)' == 'Windows_NT' " />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToKBR-Lib\ToKBR-Lib.csproj" />
+  </ItemGroup>
+
+</Project>
