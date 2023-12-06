@@ -1,9 +1,9 @@
 {
   "configProperties": {
     "File.Delete": false,
-    "SpkiUtl.Exe": "C:\\Program Files\\MDPREI\\spki\\spki1utl.exe",
-    "SpkiUtl.SignDetached": "-sign -data {0} -out {1} -detached",
-    "//SpkiUtl.Exe": "C:\\Windows\\System32\\cmd.exe",
-    "//SpkiUtl.SignDetached": "/c copy {0} {1}"
+    "//SpkiUtl.Exe": "C:\\Program Files\\MDPREI\\spki\\spki1utl.exe",
+    "//SpkiUtl.SignDetached": "-sign -data {0} -out {1} -detached",
+    "SpkiUtl.Exe": "C:\\Windows\\System32\\cmd.exe",
+    "SpkiUtl.SignDetached": "/c copy {0} {1}"
   }
 }

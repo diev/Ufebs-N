@@ -26,8 +26,6 @@ namespace ToKBR;
 
 internal class Program
 {
-    public static bool Delete { get; set; }
-
     static int Main(string[] args)
     {
         try
@@ -52,20 +50,31 @@ internal class Program
                 throw new FileNotFoundException("Файл не найден.", file);
 
             if (AppContext.TryGetSwitch("File.Delete", out bool delete))
-                Delete = delete;
+            {
+                Console.WriteLine("Промежуточные файлы будут " + (delete ? "удаляться." : "оставаться."));
+                Transformator.Delete = delete;
+            }
 
             switch (mode)
             {
                 case 1:
-                    OprRole(file);
+                    Console.WriteLine("Роль 1: операционист OPR.");
+                    Transformator.OprCheck(file);
+                    Transformator.OprRole(file);
+                    Console.WriteLine("Передайте файл ZK.xml Контролеру.");
                     break;
 
                 case 2:
-                    CtrRole(file);
+                    Console.WriteLine("Роль 2: контролер CTR.");
+                    Transformator.CtrCheck(file);
+                    Transformator.CtrRole(file);
+                    Console.WriteLine("Передайте файл ZK.KA.xml на отправку в КБР.");
                     break;
 
                 case 3:
-                    KbrRole(file);
+                    Console.WriteLine("Роль 3: отправка KBR.");
+                    Transformator.KbrCheck(file);
+                    Console.WriteLine("Файл ZK.KA.xml готов к отправке.");
                     break;
 
                 default:
@@ -99,91 +108,5 @@ internal class Program
             Console.WriteLine(ex.Message);
             return 1;
         }
-    }
-
-    static void OprRole(string file)
-    {
-        Console.WriteLine("Роль 1: операционист OPR.");
-        XmlDocument xml = new();
-        Console.WriteLine(@$"Чтение файла ""{file}""...");
-        xml.Load(file);
-
-        if (xml.DocumentElement?.LocalName == "SigEnvelope")
-            throw new ApplicationException("Передайте этот файл KBR (на отправку).");
-
-        if (xml.DocumentElement?.FirstChild?.LocalName == "SigValue")
-            throw new ApplicationException("Передайте этот файл CTR (контролеру).");
-
-        string normal = Path.ChangeExtension(file, "normal.xml");
-
-        Console.WriteLine(@$"Нормализация файла ""{file}"" в ""{normal}"".");
-        Transformator.Normalize(file, normal);
-
-        Console.WriteLine(@$"Подпишите файл ""{normal}"" (потребуется токен OPR).");
-        Console.WriteLine("Нажмите любую клавишу по готовности...");
-        Console.ReadKey();
-
-        string p7d = Path.ChangeExtension(normal, "p7d");
-        if (!SpkiUtl.CreateSignDetached(normal, p7d))
-            throw new ApplicationException("Файл ZK не создан.");
-
-        Console.WriteLine("Нажмите любую клавишу по готовности...");
-        Console.ReadKey();
-
-        string zk = Path.ChangeExtension(file, "zk.xml");
-        Transformator.CreateSigValue(file, p7d, zk);
-        Console.WriteLine(@$"Передайте файл ""{zk}"" CTR (контролеру).");
-
-        if (Delete)
-        {
-            File.Delete(file);
-            File.Delete(normal);
-            File.Delete(p7d);
-        }
-    }
-
-    static void CtrRole(string file)
-    {
-        Console.WriteLine("Роль 2: контролер CTR.");
-        XmlDocument xml = new();
-        Console.WriteLine(@$"Чтение файла ""{file}""...");
-        xml.Load(file);
-
-        if (xml.DocumentElement?.LocalName == "SigEnvelope")
-            throw new ApplicationException("Передайте этот файл KBR (на отправку).");
-
-        if (xml.DocumentElement?.FirstChild?.LocalName != "SigValue")
-            throw new ApplicationException("Передайте этот файл OPR (операционисту).");
-
-        Console.WriteLine(@$"Подпишите файл ""{file}"" (потребуется токен CTR).");
-        Console.ReadKey();
-
-        string p7d = Path.ChangeExtension(file, "p7d");
-        if (!SpkiUtl.CreateSignDetached(file, p7d))
-            throw new ApplicationException("Файл KA не создан.");
-        Console.ReadKey();
-
-        string ka = Path.ChangeExtension(file, "ka.xml");
-        Transformator.CreateSigEnvelope(file, p7d, ka);
-        Console.WriteLine(@$"Передайте файл ""{ka}"" KBR (на отправку).");
-
-        if (Delete)
-        {
-            File.Delete(file);
-            File.Delete(p7d);
-        }
-    }
-
-    static void KbrRole(string file)
-    {
-        Console.WriteLine("Роль 3: отправка KBR.");
-        XmlDocument xml = new();
-        Console.WriteLine(@$"Чтение файла ""{file}""...");
-        xml.Load(file);
-
-        if (xml.DocumentElement?.LocalName != "SigEnvelope")
-            throw new ApplicationException("Этот файл не подготовлен для отправки KBR.");
-
-        Console.WriteLine(@$"Файл ""{file}"" готов к отправке.");
     }
 }

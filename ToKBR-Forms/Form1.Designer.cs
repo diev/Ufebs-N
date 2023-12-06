@@ -34,7 +34,8 @@
             buttonFileZK = new Button();
             textFileZK = new TextBox();
             groupKA = new GroupBox();
-            textFileKBR = new TextBox();
+            buttonFileSend = new Button();
+            textFileSend = new TextBox();
             textFileKAok = new TextBox();
             buttonSend = new Button();
             buttonAddKA = new Button();
@@ -42,6 +43,7 @@
             textFileKA = new TextBox();
             openFileZK = new OpenFileDialog();
             openFileKA = new OpenFileDialog();
+            openFileSend = new OpenFileDialog();
             groupZK.SuspendLayout();
             groupKA.SuspendLayout();
             SuspendLayout();
@@ -112,7 +114,8 @@
             // groupKA
             // 
             groupKA.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            groupKA.Controls.Add(textFileKBR);
+            groupKA.Controls.Add(buttonFileSend);
+            groupKA.Controls.Add(textFileSend);
             groupKA.Controls.Add(textFileKAok);
             groupKA.Controls.Add(buttonSend);
             groupKA.Controls.Add(buttonAddKA);
@@ -125,17 +128,28 @@
             groupKA.TabStop = false;
             groupKA.Text = "Контролер:";
             // 
-            // textFileKBR
+            // buttonFileSend
             // 
-            textFileKBR.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textFileKBR.Location = new Point(206, 82);
-            textFileKBR.MaxLength = 255;
-            textFileKBR.Name = "textFileKBR";
-            textFileKBR.ReadOnly = true;
-            textFileKBR.Size = new Size(497, 23);
-            textFileKBR.TabIndex = 8;
-            textFileKBR.TabStop = false;
-            textFileKBR.WordWrap = false;
+            buttonFileSend.AutoSize = true;
+            buttonFileSend.Location = new Point(6, 50);
+            buttonFileSend.Name = "buttonFileSend";
+            buttonFileSend.Size = new Size(195, 25);
+            buttonFileSend.TabIndex = 9;
+            buttonFileSend.Text = "Выбрать файл для отправки...";
+            buttonFileSend.UseVisualStyleBackColor = true;
+            buttonFileSend.Click += ButtonFileSend_Click;
+            // 
+            // textFileSend
+            // 
+            textFileSend.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            textFileSend.Location = new Point(206, 82);
+            textFileSend.MaxLength = 255;
+            textFileSend.Name = "textFileSend";
+            textFileSend.ReadOnly = true;
+            textFileSend.Size = new Size(497, 23);
+            textFileSend.TabIndex = 8;
+            textFileSend.TabStop = false;
+            textFileSend.WordWrap = false;
             // 
             // textFileKAok
             // 
@@ -143,6 +157,7 @@
             textFileKAok.Location = new Point(206, 52);
             textFileKAok.MaxLength = 255;
             textFileKAok.Name = "textFileKAok";
+            textFileKAok.PlaceholderText = "Выберите файл ED*.zk.ka.xml";
             textFileKAok.ReadOnly = true;
             textFileKAok.Size = new Size(497, 23);
             textFileKAok.TabIndex = 7;
@@ -213,6 +228,13 @@
             openFileKA.SupportMultiDottedExtensions = true;
             openFileKA.Title = "Выберите файл для подписи КА";
             // 
+            // openFileSend
+            // 
+            openFileSend.DefaultExt = "zk.xml";
+            openFileSend.Filter = "ED.zk.ka.xml|*.zk.ka.xml|Все файлы|*.*";
+            openFileSend.SupportMultiDottedExtensions = true;
+            openFileSend.Title = "Выберите файл для отправки";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -244,6 +266,8 @@
         private OpenFileDialog openFileKA;
         private TextBox textFileZKok;
         private TextBox textFileKAok;
-        private TextBox textFileKBR;
+        private TextBox textFileSend;
+        private Button buttonFileSend;
+        private OpenFileDialog openFileSend;
     }
 }

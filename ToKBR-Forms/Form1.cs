@@ -45,6 +45,27 @@ public partial class Form1 : Form
             Directory.CreateDirectory(kbr);
     }
 
+    private void ResetForm()
+    {
+        textFileZK.Text = string.Empty;
+        textFileZKok.Text = string.Empty;
+
+        textFileKA.Text = string.Empty;
+        textFileKAok.Text = string.Empty;
+        textFileSend.Text = string.Empty;
+
+        textFileZK.BackColor = SystemColors.Control;
+        textFileZKok.BackColor = SystemColors.Control;
+
+        textFileKA.BackColor = SystemColors.Control;
+        textFileKAok.BackColor = SystemColors.Control;
+        textFileSend.BackColor = SystemColors.Control;
+
+        buttonAddZK.Enabled = false;
+        buttonAddKA.Enabled = false;
+        buttonSend.Enabled = false;
+    }
+
     private void ButtonFileZK_Click(object sender, EventArgs e)
     {
         if (openFileZK.ShowDialog() == DialogResult.OK)
@@ -54,15 +75,9 @@ public partial class Form1 : Form
 
             try
             {
-                XmlDocument xml = new();
-                xml.Load(file);
+                Transformator.OprCheck(file);
 
-                if (xml.DocumentElement?.LocalName == "SigEnvelope")
-                    throw new ApplicationException("Передайте этот файл на отправку в КБР.");
-
-                if (xml.DocumentElement?.FirstChild?.LocalName == "SigValue")
-                    throw new ApplicationException("Передайте этот файл Контролеру.");
-
+                ResetForm();
                 textFileZK.Text = file;
                 textFileZKok.Text = zk;
                 buttonAddZK.Enabled = true;
@@ -82,37 +97,49 @@ public partial class Form1 : Form
             string file = openFileKA.FileName;
             string ka = Path.ChangeExtension(file, "ka.xml");
 
+            //string kbr = Path.Combine(
+            //    Path.GetFullPath(AppContext.GetData("KBR.Dir") as string ?? "."),
+            //    Path.GetFileName(file));
+
+            try
+            {
+                Transformator.CtrCheck(file);
+
+                ResetForm();
+                textFileKA.Text = file;
+                textFileKAok.Text = ka;
+                buttonAddKA.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message,
+                    "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+
+    private void ButtonFileSend_Click(object sender, EventArgs e)
+    {
+        if (openFileSend.ShowDialog() == DialogResult.OK)
+        {
+            string file = openFileSend.FileName;
             string kbr = Path.Combine(
                 Path.GetFullPath(AppContext.GetData("KBR.Dir") as string ?? "."),
                 Path.GetFileName(file));
 
             try
             {
-                XmlDocument xml = new();
-                xml.Load(file);
+                Transformator.KbrCheck(file);
 
-                if (xml.DocumentElement?.LocalName == "SigEnvelope")
-                {
-                    //throw new ApplicationException("Передайте этот файл на отправку в КБР.");
+                ResetForm();
+                textFileKAok.Text = file;
+                textFileKAok.BackColor = Color.LightGreen;
+                textFileSend.Text = kbr;
+                buttonAddKA.Enabled = false;
+                buttonSend.Enabled = true;
 
-                    textFileKAok.Text = file;
-                    textFileKAok.BackColor = Color.LightGreen;
-                    textFileKBR.Text = kbr;
-                    buttonAddKA.Enabled = false;
-                    buttonSend.Enabled = true;
-
-                    MessageBox.Show("Этот файл можно отправлять.",
-                        "Подписано КА", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    if (xml.DocumentElement?.FirstChild?.LocalName != "SigValue")
-                        throw new ApplicationException("Передайте этот файл Операционисту.");
-
-                    textFileKA.Text = file;
-                    textFileKAok.Text = ka;
-                    buttonAddKA.Enabled = true;
-                }
+                MessageBox.Show("Этот файл можно отправлять.",
+                    "Подписано КА", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -125,32 +152,16 @@ public partial class Form1 : Form
     private void ButtonAddZK_Click(object sender, EventArgs e)
     {
         string file = textFileZK.Text;
-        string zk = textFileZKok.Text;
-
-        string normal = Path.ChangeExtension(file, "normal.xml");
-        string p7d = Path.ChangeExtension(normal, "p7d");
 
         try
         {
-            Transformator.Normalize(file, normal);
-
-            if (!SpkiUtl.CreateSignDetached(normal, p7d))
-                throw new ApplicationException("Файл ZK не создан.");
-
-            Transformator.CreateSigValue(file, p7d, zk);
+            Transformator.OprRole(file);
 
             textFileZKok.BackColor = Color.LightGreen;
             buttonAddZK.Enabled = false;
 
             MessageBox.Show("Скажите Контролеру о готовности, программу можно закрыть.",
                 "Подписано ЗК", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            if (Program.Delete)
-            {
-                File.Delete(file);
-                File.Delete(normal);
-                File.Delete(p7d);
-            }
         }
         catch (Exception ex)
         {
@@ -162,35 +173,21 @@ public partial class Form1 : Form
     private void ButtonAddKA_Click(object sender, EventArgs e)
     {
         string file = textFileKA.Text;
-        string ka = textFileKAok.Text;
-
-        string p7d = Path.ChangeExtension(file, "p7d");
-
         string kbr = Path.Combine(
             Path.GetFullPath(AppContext.GetData("KBR.Dir") as string ?? "."),
             Path.GetFileName(file));
 
         try
         {
-            if (!SpkiUtl.CreateSignDetached(file, p7d))
-                throw new ApplicationException("Файл KA не создан.");
+            Transformator.CtrRole(file);
 
-            Transformator.CreateSigEnvelope(file, p7d, ka);
-
-            textFileKAok.Text = file;
             textFileKAok.BackColor = Color.LightGreen;
-            textFileKBR.Text = kbr;
+            textFileSend.Text = kbr;
             buttonAddKA.Enabled = false;
             buttonSend.Enabled = true;
 
             MessageBox.Show("Этот файл можно отправлять.",
                 "Подписано КА", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            if (Program.Delete)
-            {
-                File.Delete(file);
-                File.Delete(p7d);
-            }
         }
         catch (Exception ex)
         {
@@ -202,19 +199,14 @@ public partial class Form1 : Form
     private void ButtonSend_Click(object sender, EventArgs e)
     {
         string file = textFileKAok.Text;
-        string kbr = textFileKBR.Text;
+        string kbr = textFileSend.Text;
 
         try
         {
-            XmlDocument xml = new();
-            xml.Load(file);
+            Transformator.KbrCheck(file);
+            Transformator.KbrRole(file, kbr);
 
-            if (xml.DocumentElement?.LocalName != "SigEnvelope")
-                throw new ApplicationException("Этот файл не подготовлен для отправки в КБР.");
-
-            File.Copy(file, kbr, true);
-            
-            textFileKBR.BackColor = Color.LightGreen;
+            textFileSend.BackColor = Color.LightGreen;
             buttonSend.Enabled = false;
 
             MessageBox.Show("Программу можно закрыть.",
