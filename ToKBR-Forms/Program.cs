@@ -23,8 +23,6 @@ namespace ToKBR.Forms
 {
     internal static class Program
     {
-        public static bool Delete { get; set; }
-
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -37,10 +35,7 @@ namespace ToKBR.Forms
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); //enable Windows-1251
 
-            if (AppContext.TryGetSwitch("File.Delete", out bool delete))
-                Delete = delete;
-
-            Application.Run(new Form1());
+            Application.Run(new MainForm());
         }
     }
 }

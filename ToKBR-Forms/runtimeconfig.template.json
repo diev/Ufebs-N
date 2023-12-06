@@ -1,9 +1,15 @@
 {
   "configProperties": {
-    "ZK.Dir": ".",
-    "KA.Dir": ".",
+    "IN.Dir": "in",
+    "ZK.Dir": "zk",
+    "KA.Dir": "ka",
     "KBR.Dir": "out",
+    "Backup.Dir": "backup",
+    "Temp.Dir": "temp",
     "File.Delete": false,
+    "Step.1": "*,user",
+    "Step.2": "*,user",
+    "Step.3": "*,user",
     "//SpkiUtl.Exe": "C:\\Program Files\\MDPREI\\spki\\spki1utl.exe",
     "//SpkiUtl.SignDetached": "-sign -data {0} -out {1} -detached",
     "SpkiUtl.Exe": "C:\\Windows\\System32\\cmd.exe",

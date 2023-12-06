@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyVersion>8.23.12.05</AssemblyVersion>
-    <FileVersion>8.23.12.05</FileVersion>
+    <AssemblyVersion>8.23.12.06</AssemblyVersion>
+    <FileVersion>8.23.12.06</FileVersion>
     <Company>CIBANK</Company>
     <Copyright>2022-2023 Dmitrii Evdokimov</Copyright>
     <NeutralLanguage>ru-RU</NeutralLanguage>
