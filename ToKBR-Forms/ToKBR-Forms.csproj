@@ -7,16 +7,16 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyVersion>8.23.12.06</AssemblyVersion>
-    <FileVersion>8.23.12.06</FileVersion>
+    <AssemblyVersion>8.23.12.7</AssemblyVersion>
+    <FileVersion>8.23.12.7</FileVersion>
     <Company>CIBANK</Company>
     <Copyright>2022-2023 Dmitrii Evdokimov</Copyright>
     <NeutralLanguage>ru-RU</NeutralLanguage>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release call $(ProjectDir)PostBuild.bat" Condition=" '$(OS)' == 'Windows_NT' " />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' and '$(ConfigurationName)' == 'Release'">
+    <Exec Command="call PostBuild.cmd $(ProjectPath)"/>
   </Target>
 
   <ItemGroup>
