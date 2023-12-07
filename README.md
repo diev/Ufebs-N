@@ -2,7 +2,7 @@
 
 Нормализация XML и установка ЗК/КА на документах УФЭБС.
 
-![Рабочее окно приложения]
+![Рабочее окно приложения](docs/assets/images/ToKBR-Forms.png)
 
 ## Settings / Настройки программы
 
@@ -53,5 +53,4 @@
 
 Licensed under the [Apache License, Version 2.0].
 
-[Рабочее окно приложения]: docs/assets/images/ToKBR-Forms.png
 [Apache License, Version 2.0]: LICENSE
