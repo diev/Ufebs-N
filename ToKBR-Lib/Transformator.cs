@@ -308,8 +308,10 @@ public static class Transformator
     /// <param name="sourceFileName">Исходный файл XML.</param>
     /// <param name="destFileName">Файл результата с ЗК.</param>
     /// <exception cref="ApplicationException"></exception>
-    public static void OprRole(string sourceFileName, string destFileName)
+    public static void OprRole(string sourceFileName, string? destFileName = null)
     {
+        destFileName ??= PathHelper.GetZKFileName(sourceFileName);
+
         string normal = PathHelper.GetNormalFileName(sourceFileName);
         string p7d = PathHelper.GetSignFileName(sourceFileName);
 
@@ -384,8 +386,10 @@ public static class Transformator
     /// <param name="sourceFileName">Исходный файл с ЗК.</param>
     /// <param name="destFileName">Файл результата с КА.</param>
     /// <exception cref="ApplicationException"></exception>
-    public static void CtrRole(string sourceFileName, string destFileName)
+    public static void CtrRole(string sourceFileName, string? destFileName = null)
     {
+        destFileName ??= PathHelper.GetKAFileName(sourceFileName);
+
         string p7d = PathHelper.GetSignFileName(sourceFileName);
         File.Copy(sourceFileName, PathHelper.GetBackupFileName(sourceFileName), true);
 

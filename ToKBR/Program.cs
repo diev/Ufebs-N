@@ -18,7 +18,6 @@ limitations under the License.
 #endregion
 
 using System.Text;
-using System.Xml;
 
 using ToKBR.Lib;
 
@@ -61,20 +60,20 @@ internal class Program
                     Console.WriteLine("Роль 1: операционист OPR.");
                     Transformator.OprCheck(file);
                     Transformator.OprRole(file);
-                    Console.WriteLine("Передайте файл ZK.xml Контролеру.");
+                    Console.WriteLine("Передайте файл с ЗК Контролеру.");
                     break;
 
                 case 2:
                     Console.WriteLine("Роль 2: контролер CTR.");
                     Transformator.CtrCheck(file);
                     Transformator.CtrRole(file);
-                    Console.WriteLine("Передайте файл ZK.KA.xml на отправку в КБР.");
+                    Console.WriteLine("Передайте конверт с КА на отправку в КБР.");
                     break;
 
                 case 3:
                     Console.WriteLine("Роль 3: отправка KBR.");
                     Transformator.KbrCheck(file);
-                    Console.WriteLine("Файл ZK.KA.xml готов к отправке.");
+                    Console.WriteLine("Конверт с КА готов к отправке.");
                     break;
 
                 default:
