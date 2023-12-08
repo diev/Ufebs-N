@@ -8,7 +8,7 @@ rem </Target>
 setlocal
 rem $(ProjectPath)
 if '%1' == '' exit /b 0
-rem C:\Repos\repo\src\project.csproj
+rem C:\Repos\Repo\src\project.csproj
 set ProjectPath=%1
 rem project.csproj
 set ProjectFileName=%~nx1
@@ -16,8 +16,12 @@ rem project
 set ProjectName=%~n1
 rem src
 for %%i in (.) do set ProjectDirName=%%~nxi
-rem C:\Repos\repo
-for %%i in (..) do set Repo=%%~dpnxi
+for %%i in (..) do (
+ rem C:\Repos\Repo
+ set Repo=%%~dpnxi
+ rem Repo
+ set RepoName=%%~nxi
+)
 rem Version X.X.X.X
 for /f "tokens=3 delims=<>" %%v in ('findstr "<AssemblyVersion>" %ProjectPath%') do set Ver=%%v
 rem Date yyyy-mm-dd
@@ -45,20 +49,11 @@ echo === Test build ===
 "C:\Program Files\7-Zip\7z.exe" x -y %SrcPack% -o%Test%
 cd %Test%
 
-set t1=build.cmd
-echo dotnet publish %ProjectDirName%\%ProjectFileName% -o Distr>%t1%
+call :build_cmd > build.cmd
+call :version_txt > version.txt
+call :postbuild_cmd > %ProjectDirName%\PostBuild.cmd
 
-set t2=version.txt
-echo %ProjectName% v%Ver% (%Ymd%)>%t2%
-echo.>>%t2%
-echo https://github.com/diev>>%t2%
-echo https://gitflic.ru/user/diev>>%t2%
-
-rem Replace this file with a dummy
-set t3=%ProjectDirName%\PostBuild.cmd
-echo exit /b 0 >%t3%
-
-"C:\Program Files\7-Zip\7z.exe" a ..\%SrcPack% %t1% %t2% %t3%
+"C:\Program Files\7-Zip\7z.exe" a ..\%SrcPack% build.cmd version.txt %ProjectDirName%\PostBuild.cmd
 
 call build.cmd
 
@@ -76,9 +71,11 @@ cd ..\..
 
 echo === Backup ===
 
-set Store=G:\BankApps\%ProjectName%
-if exist %Store% copy /y %SrcPack% %Store%
-if exist %Store% copy /y %BinPack% %Store%
+set Store=G:\BankApps\Packages\AppStore
+if not exist %Store% goto :nobackup
+copy /y %SrcPack% %Store%
+copy /y %BinPack% %Store%
+:nobackup
 
 echo === All done ===
 
@@ -96,3 +93,25 @@ echo === Pack %1 ===
 %Packer% %1\*.csproj %1\*.json %1\*.cmd
 shift
 goto pack
+
+:lower
+echo>%Temp%\%2
+for /f %%f in ('dir /b/l %Temp%\%2') do set %1=%%f
+del %Temp%\%2
+goto :eof
+
+:build_cmd
+echo dotnet publish %ProjectDirName%\%ProjectFileName% -o Distr
+goto :eof
+
+:version_txt
+call :lower RepoLName %RepoName%
+echo %ProjectName% v%Ver% (%Ymd%)
+echo.
+echo https://github.com/diev/%RepoName%
+echo https://gitflic.ru/project/diev/%RepoLName%
+goto :eof
+
+:postbuild_cmd
+echo exit /b 0
+goto :eof
