@@ -5,10 +5,10 @@
     <RootNamespace>ToKBR.Lib</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>8.23.12.05</AssemblyVersion>
-    <FileVersion>8.23.12.05</FileVersion>
-    <Company>CIBANK</Company>
-    <Copyright>2022-2023 Dmitrii Evdokimov</Copyright>
+    <Version>8.2024.1.10</Version>
+    <Description>Нормализация XML и подписывание ЗК/КА документов УФЭБС.</Description>
+    <Company>diev</Company>
+    <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
     <NeutralLanguage>ru-RU</NeutralLanguage>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>

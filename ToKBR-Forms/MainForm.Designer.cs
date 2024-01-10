@@ -55,6 +55,7 @@
             OutLabel = new Label();
             statusStrip1 = new StatusStrip();
             UserStatus = new ToolStripStatusLabel();
+            AllowedStatus = new ToolStripStatusLabel();
             AppStatus = new ToolStripStatusLabel();
             OprGroup.SuspendLayout();
             CtrGroup.SuspendLayout();
@@ -94,7 +95,7 @@
             ZKButton.Name = "ZKButton";
             ZKButton.Size = new Size(150, 25);
             ZKButton.TabIndex = 4;
-            ZKButton.Text = "Установить ЗК";
+            ZKButton.Text = "Поставить ЗК";
             ZKButton.UseVisualStyleBackColor = true;
             ZKButton.Click += ZKButton_Click;
             // 
@@ -155,7 +156,7 @@
             KAButton.Name = "KAButton";
             KAButton.Size = new Size(150, 25);
             KAButton.TabIndex = 9;
-            KAButton.Text = "Установить КА";
+            KAButton.Text = "Поставить КА";
             KAButton.UseVisualStyleBackColor = true;
             KAButton.Click += KAButton_Click;
             // 
@@ -352,7 +353,7 @@
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { UserStatus, AppStatus });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { UserStatus, AllowedStatus, AppStatus });
             statusStrip1.Location = new Point(0, 269);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(784, 22);
@@ -366,11 +367,19 @@
             UserStatus.Size = new Size(30, 17);
             UserStatus.Text = "User";
             // 
+            // AllowedStatus
+            // 
+            AllowedStatus.Name = "AllowedStatus";
+            AllowedStatus.Size = new Size(639, 17);
+            AllowedStatus.Spring = true;
+            AllowedStatus.Text = "Выберите файл кнопкой с \"...\"";
+            AllowedStatus.TextAlign = ContentAlignment.MiddleLeft;
+            // 
             // AppStatus
             // 
+            AppStatus.Margin = new Padding(10, 3, 10, 2);
             AppStatus.Name = "AppStatus";
-            AppStatus.Size = new Size(719, 17);
-            AppStatus.Spring = true;
+            AppStatus.Size = new Size(29, 17);
             AppStatus.Text = "App";
             // 
             // MainForm
@@ -387,7 +396,7 @@
             Controls.Add(OprGroup);
             MinimumSize = new Size(640, 330);
             Name = "MainForm";
-            Text = "Установить ЗК, КА и отправить в КБР";
+            Text = "Поставить ЗК, КА и отправить в КБР";
             OprGroup.ResumeLayout(false);
             OprGroup.PerformLayout();
             CtrGroup.ResumeLayout(false);
@@ -430,5 +439,6 @@
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel UserStatus;
         private ToolStripStatusLabel AppStatus;
+        private ToolStripStatusLabel AllowedStatus;
     }
 }

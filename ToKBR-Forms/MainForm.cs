@@ -32,7 +32,7 @@ public partial class MainForm : Form
         var assembly = Assembly.GetEntryAssembly();
         var assemName = assembly?.GetName();
         var app = assemName?.Name ?? "App";
-        var ver = assemName?.Version?.ToString() ?? "8.0";
+        var ver = assemName?.Version?.ToString() ?? Environment.Version.ToString(2); // "8.0"
 
         AppStatus.Text = $"{app}, ver.{ver}";
         UserStatus.Text = $"{Environment.UserName} @ {Environment.MachineName}";
@@ -78,6 +78,8 @@ public partial class MainForm : Form
         FileKAText.Text = string.Empty;
         FileOutText.Text = string.Empty;
 
+        AllowedStatus.Text = string.Empty;
+
         FileInText.BackColor = SystemColors.Control;
         FileZKText.BackColor = SystemColors.Control;
         FileKAText.BackColor = SystemColors.Control;
@@ -107,7 +109,15 @@ public partial class MainForm : Form
                 FileZKText.Text = zk;
                 FileKAText.Text = ka;
                 FileOutText.Text = kbr;
-                ZKButton.Enabled = true;
+
+                if (UserHelper.ZK)
+                {
+                    ZKButton.Enabled = true;
+                }
+                else
+                {
+                    AllowedStatus.Text = "Нет права ставить ЗК!";
+                }
             }
             catch (Exception ex)
             {
@@ -135,7 +145,15 @@ public partial class MainForm : Form
                 FileZKText.BackColor = Color.LightGreen;
                 FileKAText.Text = ka;
                 FileOutText.Text = kbr;
-                KAButton.Enabled = true;
+
+                if (UserHelper.KA)
+                {
+                    KAButton.Enabled = true;
+                }
+                else
+                {
+                    AllowedStatus.Text = "Нет права ставить КА!";
+                }
             }
             catch (Exception ex)
             {
@@ -162,7 +180,15 @@ public partial class MainForm : Form
                 FileKAText.BackColor = Color.LightGreen;
                 FileOutText.Text = kbr;
                 KAButton.Enabled = false;
-                OutButton.Enabled = true;
+
+                if (UserHelper.Out)
+                {
+                    OutButton.Enabled = true;
+                }
+                else
+                {
+                    AllowedStatus.Text = "Нет права отправлять!";
+                }
 
                 MessageBox.Show("Этот файл можно отправлять.",
                     "КА установлен",
@@ -190,7 +216,15 @@ public partial class MainForm : Form
             {
                 FileZKText.BackColor = Color.LightGreen;
                 ZKButton.Enabled = false;
-                KAButton.Enabled = true;
+
+                if (UserHelper.KA)
+                {
+                    KAButton.Enabled = true;
+                }
+                else
+                {
+                    AllowedStatus.Text = "Нет права ставить КА!";
+                }
 
                 if (MessageBox.Show("Сообщите Контролеру о готовности.\n\nПрограмму можно закрыть?",
                     "ЗК установлен",
@@ -225,7 +259,15 @@ public partial class MainForm : Form
             {
                 FileKAText.BackColor = Color.LightGreen;
                 KAButton.Enabled = false;
-                OutButton.Enabled = true;
+
+                if (UserHelper.Out)
+                {
+                    OutButton.Enabled = true;
+                }
+                else
+                {
+                    AllowedStatus.Text = "Нет права отправлять!";
+                }
 
                 MessageBox.Show("Этот файл можно отправлять.",
                     "КА установлен",
