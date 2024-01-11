@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-Copyright 2022-2023 Dmitrii Evdokimov
+Copyright 2022-2024 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,4 +131,8 @@ public static class PathHelper
     public static string GetBackupFileName(string fileName)
         => Path.Combine(BackupDir,
             Path.GetFileName(fileName));
+
+    public static bool AreSame(string fileName1, string fileName2)
+        => Path.GetFullPath(fileName1).Equals(Path.GetFullPath(fileName2),
+            StringComparison.OrdinalIgnoreCase);
 }

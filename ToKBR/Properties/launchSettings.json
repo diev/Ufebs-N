@@ -2,6 +2,18 @@
   "profiles": {
     "ToKBR": {
       "commandName": "Project"
+    },
+    "Профиль 1": {
+      "commandName": "Project",
+      "commandLineArgs": "1 file.xml"
+    },
+    "Профиль 2": {
+      "commandName": "Project",
+      "commandLineArgs": "2 file.zk.xml"
+    },
+    "Профиль 3": {
+      "commandName": "Project",
+      "commandLineArgs": "3 file.zk.ka.xml"
     }
   }
 }

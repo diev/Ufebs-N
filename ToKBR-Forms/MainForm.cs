@@ -1,6 +1,6 @@
 #region License
 /*
-Copyright 2022-2023 Dmitrii Evdokimov
+Copyright 2022-2024 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,6 @@ limitations under the License.
 */
 #endregion
 
-using System.Reflection;
-
 using ToKBR.Lib;
 
 namespace ToKBR.Forms;
@@ -29,12 +27,7 @@ public partial class MainForm : Form
     {
         InitializeComponent();
 
-        var assembly = Assembly.GetEntryAssembly();
-        var assemName = assembly?.GetName();
-        var app = assemName?.Name ?? "App";
-        var ver = assemName?.Version?.ToString() ?? Environment.Version.ToString(2); // "8.0"
-
-        AppStatus.Text = $"{app}, ver.{ver}";
+        AppStatus.Text = AppInfo.Banner();
         UserStatus.Text = $"{Environment.UserName} @ {Environment.MachineName}";
 
         FileInDialog.InitialDirectory = PathHelper.InDir;

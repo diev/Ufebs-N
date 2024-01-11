@@ -17,28 +17,19 @@ limitations under the License.
 */
 #endregion
 
+using System.Reflection;
+
 namespace ToKBR.Lib;
 
-public static class UserHelper
+public static class AppInfo
 {
-    public static bool ZK => GetAllowed("Step.1");
-    public static bool KA => GetAllowed("Step.2");
-    public static bool Out => GetAllowed("Step.3");
-
-    public static bool GetAllowed(string key)
+    public static string Banner()
     {
-        string? value = AppContext.GetData(key) as string;
+        var assembly = Assembly.GetEntryAssembly();
+        var assemName = assembly?.GetName();
+        var app = assemName?.Name ?? "App";
+        var ver = assemName?.Version?.ToString() ?? Environment.Version.ToString(2); // "8.0"
 
-        if (string.IsNullOrEmpty(value))
-        {
-            return false;
-        }
-
-        string[] allowed = value.Split(',');
-
-        return
-            allowed.Contains("*") ||
-            allowed.Contains(Environment.MachineName) ||
-            allowed.Contains(Environment.UserName);
+        return $"{app}, v{ver}";
     }
 }

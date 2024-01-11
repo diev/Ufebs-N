@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-Copyright 2022-2023 Dmitrii Evdokimov
+Copyright 2022-2024 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,55 +29,67 @@ internal class Program
     {
         try
         {
+            Console.WriteLine(AppInfo.Banner());
+
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); //enable Windows-1251
 
             if (args.Length == 0)
-                throw new ArgumentNullException(nameof(args), "Не указан параметр 1 (роль обработки): 1 - OPR, 2 - CTR, 3 - KBR.");
+                throw new ArgumentNullException(nameof(args), 
+                    "Не указан параметр 1 (роль обработки): 1 - OPR, 2 - CTR, 3 - KBR.");
 
             if (!int.TryParse(args[0], out int mode))
-                throw new ArgumentOutOfRangeException(nameof(args), args[0], "Роль обработки должна быть целым числом.");
+                throw new ArgumentOutOfRangeException(nameof(args), args[0],
+                    "Роль обработки должна быть целым числом.");
 
             if (mode < 1 || mode > 3)
-                throw new ArgumentOutOfRangeException(nameof(args), mode, "Параметр 1 (роль обработки): 1 - OPR, 2 - CTR, 3 - KBR.");
+                throw new ArgumentOutOfRangeException(nameof(args), mode,
+                    "Параметр 1 (роль обработки): 1 - OPR, 2 - CTR, 3 - KBR.");
 
             if (args.Length == 1)
-                throw new ArgumentNullException(nameof(args), "Не указан параметр 2 (файл УФЭБС XML) для обработки.");
+                throw new ArgumentNullException(nameof(args), 
+                    "Не указан параметр 2 (файл УФЭБС XML) для обработки.");
 
             string file = args[1];
 
             if (!File.Exists(file))
-                throw new FileNotFoundException("Файл не найден.", file);
+                throw new FileNotFoundException(
+                    "Файл не найден.", file);
 
             if (AppContext.TryGetSwitch("File.Delete", out bool delete))
             {
-                Console.WriteLine("Промежуточные файлы будут " + (delete ? "удаляться." : "оставаться."));
+                Console.WriteLine("Внимание: промежуточные файлы будут " + (delete ? "удаляться!" : "оставаться!"));
                 Transformator.Delete = delete;
             }
+
+            string ext = Path.GetExtension(file);
 
             switch (mode)
             {
                 case 1:
-                    Console.WriteLine("Роль 1: операционист OPR.");
+                    Console.WriteLine(@$"Роль 1: операционист OPR - установка ЗК в ""{file}""");
                     Transformator.OprCheck(file);
-                    Transformator.OprRole(file);
-                    Console.WriteLine("Передайте файл с ЗК Контролеру.");
+                    string zk = Path.ChangeExtension(file, "zk" + ext);
+                    Transformator.OprRole(file, zk);
+                    Console.WriteLine(@$"Передайте файл ""{zk}"" Контролеру.");
                     break;
 
                 case 2:
-                    Console.WriteLine("Роль 2: контролер CTR.");
+                    Console.WriteLine(@$"Роль 2: контролер CTR - установка КА в ""{file}""");
                     Transformator.CtrCheck(file);
-                    Transformator.CtrRole(file);
-                    Console.WriteLine("Передайте конверт с КА на отправку в КБР.");
+                    string ka = Path.ChangeExtension(file, "ka" + ext);
+                    Transformator.CtrRole(file, ka);
+                    Console.WriteLine(@$"Передайте конверт ""{ka}"" на отправку в КБР.");
                     break;
 
                 case 3:
-                    Console.WriteLine("Роль 3: отправка KBR.");
+                    Console.WriteLine(@$"Роль 3: отправка KBR - проверка КА в ""{file}""");
                     Transformator.KbrCheck(file);
-                    Console.WriteLine("Конверт с КА готов к отправке.");
+                    Console.WriteLine(@$"Конверт ""{file}"" с КА готов к отправке.");
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(args), mode, "Роль обработки: 1 - OPR, 2 - CTR, 3 - KBR.");
+                    throw new ArgumentOutOfRangeException(nameof(args), mode, 
+                        "Роль обработки: 1 - OPR, 2 - CTR, 3 - KBR.");
             }
 
             Console.WriteLine("Ваша роль исполнена.");
@@ -100,7 +112,7 @@ internal class Program
             if (ex is ArgumentNullException nullEx)
             {
                 Console.WriteLine(nullEx.Message);
-                Console.WriteLine($"Пустой параметр {nullEx.ParamName}");
+                Console.WriteLine(@$"Пустой параметр ""{nullEx.ParamName}""");
                 return 3;
             }
 

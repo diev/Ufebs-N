@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>8.2024.1.10</Version>
-    <Description>Нормализация XML и подписывание ЗК/КА документов УФЭБС.</Description>
+    <Version>8.2024.1.11</Version>
+    <Description>Нормализация XML и установка ЗК/КА в документы УФЭБС.</Description>
     <Company>diev</Company>
     <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
     <NeutralLanguage>ru-RU</NeutralLanguage>
@@ -16,11 +16,17 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' and '$(ConfigurationName)' == 'Release'">
-    <Exec Command="call PostBuild.cmd $(ProjectPath)"/>
+    <Exec Command="call PostBuild.cmd $(ProjectPath)" />
   </Target>
 
   <ItemGroup>
     <ProjectReference Include="..\ToKBR-Lib\ToKBR-Lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="file.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

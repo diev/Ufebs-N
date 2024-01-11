@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-Copyright 2022-2023 Dmitrii Evdokimov
+Copyright 2022-2024 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,14 +39,17 @@ public static class SpkiUtl
         string section = nameof(SpkiUtl) + '.';
         string key = section + nameof(Exe);
         Exe = AppContext.GetData(key) as string
-            ?? throw new ArgumentNullException(Exe, $"В конфиге не указан параметр {key}");
+            ?? throw new ArgumentNullException(Exe, 
+            $"В конфиге не указан параметр {key}");
 
         if (!File.Exists(Exe))
-            throw new FileNotFoundException($"В конфиге ошибка параметра {key}", Exe);
+            throw new FileNotFoundException(
+                $"В конфиге ошибка параметра {key}", Exe);
 
         key = section + nameof(SignDetached);
         SignDetached = AppContext.GetData(key) as string
-            ?? throw new ArgumentNullException(SignDetached, $"В конфиге не указан параметр {key}");
+            ?? throw new ArgumentNullException(SignDetached,
+            $"В конфиге не указан параметр {key}");
     }
 
     /// <summary>

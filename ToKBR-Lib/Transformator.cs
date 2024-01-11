@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-Copyright 2022-2023 Dmitrii Evdokimov
+Copyright 2022-2024 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,9 @@ limitations under the License.
 */
 #endregion
 
-using System;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace ToKBR.Lib;
 
@@ -60,12 +58,14 @@ public static class Transformator
 
         if (doc is null)
         {
-            throw new ApplicationException(@$"Ошибка загрузки ""{sourceFileName}"".");
+            throw new ApplicationException(
+                @$"Ошибка загрузки ""{sourceFileName}"".");
         }
 
         if (doc.DocumentElement is null)
         {
-            throw new ApplicationException(@$"Ошибка разбора ""{sourceFileName}"".");
+            throw new ApplicationException(
+                @$"Ошибка разбора ""{sourceFileName}"".");
         }
 
         //*[namespace-uri()='{uri}']
@@ -77,8 +77,9 @@ public static class Transformator
         //doc.DocumentElement.RemoveAttribute("xmlns");
         //doc.DocumentElement.SetAttribute("xmlns:n1", uri); //TODO n2+
 
-        //var nodes = doc.SelectNodes(xpath) ??
-        //    throw new ApplicationException(@$"Ошибка выборки нод в ""{sourceFileName}"".");
+        //var nodes = doc.SelectNodes(xpath)
+        //    ?? throw new ApplicationException(
+        //        @$"Ошибка выборки нод в ""{sourceFileName}"".");
 
         //foreach (XmlElement node in nodes)
         //{
@@ -93,13 +94,15 @@ public static class Transformator
         list.Add(uri1);
 
         var xpath = "//*";
-        var nodes = doc.SelectNodes(xpath) ??
-            throw new ApplicationException(@$"Ошибка выборки нод в ""{sourceFileName}"".");
+        var nodes = doc.SelectNodes(xpath)
+            ?? throw new ApplicationException(
+                @$"Ошибка выборки нод в ""{sourceFileName}"".");
 
         foreach (XmlElement node in nodes)
         {
             // fast line by default
-            if (node.NamespaceURI.Equals(uri1, StringComparison.OrdinalIgnoreCase))
+            if (node.NamespaceURI.Equals(uri1,
+                StringComparison.OrdinalIgnoreCase))
             {
                 node.RemoveAttribute("xmlns");
                 node.Prefix = "n1";
@@ -123,11 +126,13 @@ public static class Transformator
 
         XmlDsigC14NTransform transform = new();
         transform.LoadInput(doc);
+
         using var canonizedStream = (MemoryStream)transform.GetOutput(typeof(Stream));
         var bytes = canonizedStream.ToArray();
         File.WriteAllBytes(destFileName, bytes);
 
-        bool packet = doc.DocumentElement.LocalName.StartsWith("Packet", StringComparison.OrdinalIgnoreCase);
+        bool packet = doc.DocumentElement.LocalName.StartsWith("Packet",
+            StringComparison.OrdinalIgnoreCase);
 
         if (packet)
         {
@@ -226,10 +231,14 @@ public static class Transformator
         XmlDocument xml = new();
         xml.Load(sourceFileName);
 
-        var root = xml.DocumentElement ?? throw new ApplicationException("Неполный XML: нет Root.");
+        var root = xml.DocumentElement
+            ?? throw new ApplicationException(
+                "Неполный XML: нет Root.");
 
-        if (root.LocalName.Equals("SigEnvelope", StringComparison.OrdinalIgnoreCase))
-            throw new ApplicationException("Это конверт с КА - передайте его на отправку в КБР.");
+        if (root.LocalName.Equals("SigEnvelope",
+            StringComparison.OrdinalIgnoreCase))
+            throw new ApplicationException(
+                "Это конверт с КА - передайте его на отправку в КБР.");
 
         byte[] macValue = File.ReadAllBytes(macValueFileName);
         byte[] senObject = File.ReadAllBytes(sourceFileName);
@@ -260,6 +269,36 @@ public static class Transformator
     }
 
     /// <summary>
+    /// Распаковка конверта XML с кодом аутентификации (КА).
+    /// </summary>
+    /// <param name="sourceFileName">Исходный файл в формате конверта XML.</param>
+    /// <param name="macValueFileName">Двоичный файл с КА.</param>
+    /// <param name="destFileName">Файл XML из внутреннего контейнера.</param>
+    public static void ParseSigEnvelope(string sourceFileName, string macValueFileName, string destFileName)
+    {
+        XmlDocument xml = new();
+        xml.Load(sourceFileName);
+
+        var root = xml.DocumentElement
+            ?? throw new ApplicationException(
+                "Неполный XML: нет Root.");
+
+        if (!root.LocalName.Equals("SigEnvelope",
+            StringComparison.OrdinalIgnoreCase))
+            throw new ApplicationException(
+                "Это не конверт с КА - невозможно распаковать.");
+
+        string macValue = root.ChildNodes[0].FirstChild.InnerText; //TODO Get SigEnvelope.SigContainer.MACValue
+        string senObject = root.ChildNodes[1].InnerText; //TODO Get SigEnvelope.Object
+
+        var ka = Convert.FromBase64String(macValue);
+        var data = Convert.FromBase64String(senObject);
+
+        File.WriteAllBytes(macValueFileName, ka);
+        File.WriteAllBytes(destFileName, data);
+    }
+
+    /// <summary>
     /// Проверка исходного файла для роли Операциониста.
     /// </summary>
     /// <param name="sourceFileName">Исходный файл.</param>
@@ -269,36 +308,83 @@ public static class Transformator
         XmlDocument xml = new();
         xml.Load(sourceFileName);
 
-        var root = xml.DocumentElement ?? throw new ApplicationException("Неполный XML: нет Root.");
+        // XML?
+        var root = xml.DocumentElement
+            ?? throw new ApplicationException(
+                "Неполный XML: нет Root.");
 
-        if (root.LocalName.Equals("SigEnvelope", StringComparison.OrdinalIgnoreCase))
-            throw new ApplicationException("Это конверт с КА - передайте его на отправку в КБР.");
+        var rootName = root.LocalName;
 
-        if (root.LocalName.StartsWith("Packet", StringComparison.OrdinalIgnoreCase))
+        if (rootName.StartsWith("ED",
+            StringComparison.OrdinalIgnoreCase))
         {
-            var ed = root.FirstChild ?? throw new ApplicationException("Неполный XML: нет ED в Packet.");
+            // ZK?
+            var zk = root.FirstChild;
 
-            if (ed.LocalName.StartsWith("ED", StringComparison.OrdinalIgnoreCase))
+            if (zk != null && zk.LocalName.Equals("SigValue",
+                StringComparison.OrdinalIgnoreCase))
             {
-                var sig = ed.FirstChild;
-
-                if (sig != null 
-                    && sig.LocalName.Equals("SigValue", StringComparison.OrdinalIgnoreCase))
-                    throw new ApplicationException("Это файл с ЗК - передайте его Контролеру.");
+                throw new ApplicationException(
+                    "Этот файл уже с ЗК - передайте его Контролеру.");
             }
         }
-        else // EDxxx
+        else if (rootName.StartsWith("Packet",
+            StringComparison.OrdinalIgnoreCase))
         {
-            var ed = root;
+            var count = root.ChildNodes.Count; //TODO Check EDQuantity
 
-            if (ed.LocalName.StartsWith("ED", StringComparison.OrdinalIgnoreCase))
+            if (count == 0)
             {
-                var sig = ed.FirstChild;
-
-                if (sig != null
-                    && sig.LocalName.Equals("SigValue", StringComparison.OrdinalIgnoreCase))
-                    throw new ApplicationException("Это файл с ЗК - передайте его Контролеру.");
+                throw new ApplicationException(
+                    @$"Ошибка УФЭБС: нет ED в {rootName}.");
             }
+
+            var countZK = 0;
+
+            foreach (XmlNode ed in root.ChildNodes)
+            {
+                // ED?
+                if (ed.LocalName.StartsWith("ED",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    // ZK?
+                    var zk = ed.FirstChild;
+
+                    if (zk != null && zk.LocalName.Equals("SigValue",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        countZK++;
+                    }
+                }
+                else // unknown
+                {
+                    throw new ApplicationException(
+                        @$"Ошибка УФЭБС: {ed.LocalName} в {rootName}.");
+                }
+            }
+
+            if (countZK == count)
+            {
+                throw new ApplicationException(
+                    "Этот файл уже с ЗК - передайте его Контролеру.");
+            }
+
+            if (countZK > 0)
+            {
+                throw new ApplicationException(
+                    $"Этот файл имеет {countZK}/{count} ЗК - лучше его обработать заново.");
+            }
+        }
+        else if (rootName.Equals("SigEnvelope",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ApplicationException(
+                "Это конверт с КА - передайте его на отправку в КБР.");
+        }
+        else // unknown
+        {
+            throw new ApplicationException(
+                @$"Ошибка УФЭБС: {rootName} в корне XML.");
         }
     }
 
@@ -320,7 +406,8 @@ public static class Transformator
         if (count == -1)
         {
             if (!SpkiUtl.CreateSignDetached(normal, p7d))
-                throw new ApplicationException("Файл ZK не создан.");
+                throw new ApplicationException(
+                    "Файл ZK не создан.");
 
             CreateEDSigValue(sourceFileName, p7d, destFileName);
         }
@@ -332,7 +419,8 @@ public static class Transformator
                 string p7dX = PathHelper.GetSignFileName(sourceFileName, i);
 
                 if (!SpkiUtl.CreateSignDetached(normalX, p7dX))
-                    throw new ApplicationException("Файл ZK не создан.");
+                    throw new ApplicationException(
+                        "Файл ZK не создан.");
             }
 
             CreatePacketSigValues(sourceFileName, count, destFileName);
@@ -349,34 +437,83 @@ public static class Transformator
         XmlDocument xml = new();
         xml.Load(sourceFileName);
 
-        var root = xml.DocumentElement ?? throw new ApplicationException("Неполный XML: нет Root.");
+        // XML?
+        var root = xml.DocumentElement
+            ?? throw new ApplicationException(
+                "Неполный XML: нет Root.");
 
-        //if (root.LocalName.Equals("SigEnvelope", StringComparison.OrdinalIgnoreCase))
-        //    throw new ApplicationException("Передайте этот файл на отправку в КБР.");
+        var rootName = root.LocalName;
 
-        if (root.LocalName.StartsWith("Packet", StringComparison.OrdinalIgnoreCase))
+        if (rootName.StartsWith("ED",
+            StringComparison.OrdinalIgnoreCase))
         {
-            var ed = root.FirstChild ?? throw new ApplicationException("Неполный XML: нет ED в Packet.");
+            // ZK?
+            var zk = root.FirstChild;
 
-            if (ed.LocalName.StartsWith("ED", StringComparison.OrdinalIgnoreCase))
+            if (zk == null || !zk.LocalName.Equals("SigValue",
+                StringComparison.OrdinalIgnoreCase))
             {
-                var sig = ed.FirstChild ?? throw new ApplicationException("Неполный XML: нет элементов в ED.");
-
-                if (!sig.LocalName.Equals("SigValue", StringComparison.OrdinalIgnoreCase))
-                    throw new ApplicationException("Это файл без ЗК - передайте его Операционисту.");
+                throw new ApplicationException(
+                    "Этот файл без ЗК - передайте его Операционисту.");
             }
         }
-        else
+        else if (rootName.StartsWith("Packet",
+            StringComparison.OrdinalIgnoreCase))
         {
-            var ed = root;
+            var count = root.ChildNodes.Count; //TODO Check EDQuantity
 
-            if (ed.LocalName.StartsWith("ED", StringComparison.OrdinalIgnoreCase))
+            if (count == 0)
             {
-                var sig = ed.FirstChild ?? throw new ApplicationException("Неполный XML: нет элементов в ED.");
-
-                if (!sig.LocalName.Equals("SigValue", StringComparison.OrdinalIgnoreCase))
-                    throw new ApplicationException("Это файл без ЗК - передайте его Операционисту.");
+                throw new ApplicationException(
+                    @$"Ошибка УФЭБС: нет ED в {rootName}.");
             }
+
+            var countZK = 0;
+
+            foreach (XmlNode ed in root.ChildNodes)
+            {
+                // ED?
+                if (ed.LocalName.StartsWith("ED",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    // ZK?
+                    var zk = ed.FirstChild;
+
+                    if (zk == null || !zk.LocalName.Equals("SigValue",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        countZK++;
+                    }
+                }
+                else // unknown
+                {
+                    throw new ApplicationException(
+                        @$"Ошибка УФЭБС: {ed.LocalName} в {rootName}.");
+                }
+            }
+
+            if (countZK == 0)
+            {
+                throw new ApplicationException(
+                    "Этот файл без ЗК - передайте его Операционисту.");
+            }
+
+            if (countZK < count)
+            {
+                throw new ApplicationException(
+                    $"Этот файл имеет {countZK}/{count} ЗК - лучше его обработать заново.");
+            }
+        }
+        else if (rootName.Equals("SigEnvelope",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ApplicationException(
+                "Это конверт уже с КА - передайте его на отправку в КБР.");
+        }
+        else // unknown
+        {
+            throw new ApplicationException(
+                @$"Ошибка УФЭБС: {rootName} в корне XML.");
         }
     }
 
@@ -391,10 +528,16 @@ public static class Transformator
         destFileName ??= PathHelper.GetKAFileName(sourceFileName);
 
         string p7d = PathHelper.GetSignFileName(sourceFileName);
-        File.Copy(sourceFileName, PathHelper.GetBackupFileName(sourceFileName), true);
+        string bak = PathHelper.GetBackupFileName(sourceFileName);
+
+        if (!PathHelper.AreSame(sourceFileName, bak))
+        {
+            File.Copy(sourceFileName, bak, true);
+        }
 
         if (!SpkiUtl.CreateSignDetached(sourceFileName, p7d))
-            throw new ApplicationException("Файл KA не создан.");
+            throw new ApplicationException(
+                "Файл KA не создан.");
 
         CreateSigEnvelope(sourceFileName, p7d, destFileName);
     }
@@ -409,35 +552,125 @@ public static class Transformator
         XmlDocument xml = new();
         xml.Load(sourceFileName);
 
-        var root = xml.DocumentElement ?? throw new ApplicationException("Неполный XML: нет Root.");
+        // XML?
+        var root = xml.DocumentElement
+            ?? throw new ApplicationException(
+                "Неполный XML: нет Root.");
 
-        if (root.LocalName.StartsWith("Packet", StringComparison.OrdinalIgnoreCase))
+        var rootName = root.LocalName;
+
+        if (rootName.StartsWith("ED",
+            StringComparison.OrdinalIgnoreCase))
         {
-            var ed = root.FirstChild ?? throw new ApplicationException("Неполный XML: нет ED в Packet.");
+            // ZK?
+            var zk = root.FirstChild;
 
-            if (ed.LocalName.StartsWith("ED", StringComparison.OrdinalIgnoreCase))
+            if (zk == null || !zk.LocalName.Equals("SigValue",
+                StringComparison.OrdinalIgnoreCase))
             {
-                var sig = ed.FirstChild ?? throw new ApplicationException("Неполный XML: нет элементов в ED.");
-
-                if (!sig.LocalName.Equals("SigValue", StringComparison.OrdinalIgnoreCase))
-                    throw new ApplicationException("Это файл без ЗК - передайте его Операционисту.");
+                throw new ApplicationException(
+                    "Этот файл без ЗК - передайте его Операционисту.");
             }
+
+            throw new ApplicationException(
+                "Этот файл с ЗК - передайте его Контролеру.");
         }
-        else
+        else if (rootName.StartsWith("Packet",
+            StringComparison.OrdinalIgnoreCase))
         {
-            var ed = root;
+            var count = root.ChildNodes.Count; //TODO Check EDQuantity
 
-            if (ed.LocalName.StartsWith("ED", StringComparison.OrdinalIgnoreCase))
+            if (count == 0)
             {
-                var sig = ed.FirstChild ?? throw new ApplicationException("Неполный XML: нет элементов в ED.");
-
-                if (!sig.LocalName.Equals("SigValue", StringComparison.OrdinalIgnoreCase))
-                    throw new ApplicationException("Это файл без ЗК - передайте его Операционисту.");
+                throw new ApplicationException(
+                    @$"Ошибка УФЭБС: нет ED в {rootName}.");
             }
-        }
 
-        if (!root.LocalName.Equals("SigEnvelope", StringComparison.OrdinalIgnoreCase))
-            throw new ApplicationException("Это файл без КА - передайте его Контролеру.");
+            var countZK = 0;
+
+            foreach (XmlNode ed in root.ChildNodes)
+            {
+                // ED?
+                if (ed.LocalName.StartsWith("ED",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    // ZK?
+                    var zk = ed.FirstChild;
+
+                    if (zk == null || !zk.LocalName.Equals("SigValue",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        countZK++;
+                    }
+
+                    //TODO Check ZK
+                }
+                else // unknown
+                {
+                    throw new ApplicationException(
+                        @$"Ошибка УФЭБС: {ed.LocalName} в {rootName}.");
+                }
+            }
+
+            if (countZK == 0)
+            {
+                throw new ApplicationException(
+                    "Этот файл без ЗК - передайте его Операционисту.");
+            }
+
+            if (countZK == count)
+            {
+                throw new ApplicationException(
+                    "Этот файл с ЗК - передайте его Контролеру.");
+            }
+
+            throw new ApplicationException(
+                $"Этот файл имеет {countZK}/{count} ЗК - лучше его обработать заново.");
+        }
+        else if (rootName.Equals("SigEnvelope",
+            StringComparison.OrdinalIgnoreCase))
+        {
+#if DEBUG
+            string macValue = root.ChildNodes[0].FirstChild.InnerText; //TODO Get SigEnvelope.SigContainer.MACValue
+            string senObject = root.ChildNodes[1].InnerText; //TODO Get SigEnvelope.Object
+
+            var ka = Convert.FromBase64String(macValue);
+            var data = Convert.FromBase64String(senObject);
+
+            File.WriteAllBytes(sourceFileName + ".src.p7d", ka);
+            File.WriteAllBytes(sourceFileName + ".src.zk.xml", data);
+
+            //TODO Check KA
+
+            XmlDocument parseXml = new();
+            parseXml.Load(sourceFileName + ".src.zk.xml");
+
+            // XML?
+            var parseRoot = parseXml.DocumentElement;
+
+            if (parseRoot.LocalName.StartsWith("ED"))
+            {
+                var sigValue = parseRoot.FirstChild.InnerText;
+                var zk = Convert.FromBase64String(sigValue);
+                File.WriteAllBytes(sourceFileName + ".src.ns.p7d", zk);
+
+                parseRoot.RemoveChild(parseRoot.FirstChild);
+                parseXml.Save(sourceFileName + ".src.xml");
+                Normalize(sourceFileName + ".src.xml", sourceFileName + ".src.ns.xml");
+
+                //TODO Check ZK
+            }
+            else if (parseRoot.LocalName.StartsWith("Packet"))
+            {
+                //TODO
+            }
+#endif
+        }
+        else // unlnown
+        {
+            throw new ApplicationException(
+                @$"Ошибка УФЭБС: {rootName} в корне XML.");
+        }
     }
 
     /// <summary>

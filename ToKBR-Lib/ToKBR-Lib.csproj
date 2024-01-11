@@ -5,8 +5,8 @@
     <RootNamespace>ToKBR.Lib</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>8.2024.1.10</Version>
-    <Description>Нормализация XML и подписывание ЗК/КА документов УФЭБС.</Description>
+    <Version>8.2024.1.11</Version>
+    <Description>Нормализация XML и установка ЗК/КА в документы УФЭБС.</Description>
     <Company>diev</Company>
     <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
     <NeutralLanguage>ru-RU</NeutralLanguage>
