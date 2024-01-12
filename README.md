@@ -1,5 +1,7 @@
 # Ufebs-N
 
+![badge](https://github.com/diev/Ufebs-N/actions/workflows/dotnet8-desktop.yml/badge.svg)
+
 Нормализация XML и установка ЗК/КА в документы УФЭБС.
 
 ![Рабочее окно приложения](docs/assets/images/ToKBR-Forms.png)
