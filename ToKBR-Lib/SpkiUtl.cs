@@ -36,20 +36,16 @@ public static class SpkiUtl
 
     static SpkiUtl()
     {
-        string section = nameof(SpkiUtl) + '.';
-        string key = section + nameof(Exe);
-        Exe = AppContext.GetData(key) as string
-            ?? throw new ArgumentNullException(Exe, 
-            $"В конфиге не указан параметр {key}");
+        Exe = @"C:\Program Files\MDPREI\spki\spki1utl.exe";
+        SignDetached = "-sign -data {0} -out {1} -detached";
 
-        if (!File.Exists(Exe))
-            throw new FileNotFoundException(
-                $"В конфиге ошибка параметра {key}", Exe);
+        //if (!File.Exists(Exe))
+        //{
+        //    Console.WriteLine("DEMO режим - файлы не подписываются!"); //TODO
 
-        key = section + nameof(SignDetached);
-        SignDetached = AppContext.GetData(key) as string
-            ?? throw new ArgumentNullException(SignDetached,
-            $"В конфиге не указан параметр {key}");
+        //    Exe = @"C:\Windows\System32\cmd.exe";
+        //    SignDetached = "/c copy {0} {1}";
+        //}
     }
 
     /// <summary>
@@ -59,27 +55,35 @@ public static class SpkiUtl
     /// <param name="p7d">Двоичный файл создаваемой электронной подписи.</param>
     /// <param name="overwrite">Переписывать ли файл, если он уже есть.</param>
     /// <returns>Создан ли файл электронной подписи.</returns>
-    public static bool CreateSignDetached(string sourceFileName, string p7d, bool overwrite = false)
+    public static bool CreateSignDetached(string sourceFileName, string p7d, bool overwrite = true)
     {
-        if (File.Exists(p7d))
+        if (File.Exists(Exe))
         {
-            if (overwrite)
+            if (File.Exists(p7d))
             {
-                File.Delete(p7d);
+                if (overwrite)
+                {
+                    File.Delete(p7d);
+                }
+                else
+                {
+                    return true;
+                }
             }
-            else
-            {
-                return true;
-            }
+
+            string cmdline = string.Format(SignDetached, sourceFileName, p7d);
+            //Task.Run(async () =>
+            //{
+            //    await Executor.StartAsync(Exe, cmdline); 
+            //});
+            Executor.Start(Exe, cmdline);
+
+            return File.Exists(p7d);
         }
 
-        string cmdline = string.Format(SignDetached, sourceFileName, p7d);
-        //Task.Run(async () =>
-        //{
-        //    await Executor.StartAsync(Exe, cmdline); 
-        //});
-        Executor.Start(Exe, cmdline);
-
-        return File.Exists(p7d);
+        //DEMO
+        Console.WriteLine("DEMO режим - файлы не подписываются!"); //TODO
+        File.WriteAllText(p7d, "DEMO-SIGN");
+        return true;
     }
 }

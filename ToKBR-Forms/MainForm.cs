@@ -30,9 +30,9 @@ public partial class MainForm : Form
         AppStatus.Text = AppInfo.Banner();
         UserStatus.Text = $"{Environment.UserName} @ {Environment.MachineName}";
 
-        FileInDialog.InitialDirectory = PathHelper.InDir;
-        FileZKDialog.InitialDirectory = PathHelper.ZKDir;
-        FileKADialog.InitialDirectory = PathHelper.KADir;
+        FileInDialog.InitialDirectory = PathHelper.IN;
+        FileZKDialog.InitialDirectory = PathHelper.ZK;
+        FileKADialog.InitialDirectory = PathHelper.KA;
 
         //TODO
 

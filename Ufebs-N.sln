@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToKBR-Forms", "ToKBR-Forms\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToKBR-Lib", "ToKBR-Lib\ToKBR-Lib.csproj", "{E4C23ABC-AE96-4C46-BDF3-E77098523751}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToKBR-Lib.Tests", "ToKBR-Lib.Tests\ToKBR-Lib.Tests.csproj", "{2CBA0902-019F-48B9-AA96-211F4E6E9153}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToKBR-Lib.Tests", "ToKBR-Lib.Tests\ToKBR-Lib.Tests.csproj", "{2CBA0902-019F-48B9-AA96-211F4E6E9153}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

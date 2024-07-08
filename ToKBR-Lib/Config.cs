@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-Copyright 2022-2024 Dmitrii Evdokimov
+Copyright 2022-2023 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,19 +17,18 @@ limitations under the License.
 */
 #endregion
 
-using System.Reflection;
-
 namespace ToKBR.Lib;
 
-public static class AppInfo
+public class Config
 {
-    public static string Banner()
-    {
-        var assembly = Assembly.GetEntryAssembly();
-        var assemName = assembly?.GetName();
-        var app = assemName?.Name ?? "App";
-        var ver = assemName?.Version?.ToString() ?? Environment.Version.ToString(2); // "8.0"
-
-        return $"{app} v{ver}";
-    }
+    public string? IN { get; set; }
+    public string? ZK { get; set; }
+    public string? KA { get; set; }
+    public string? OUT { get; set; }
+    public string? Backup { get; set; }
+    public string? Temp { get; set; }
+    public bool Delete { get; set; }
+    public string? OPR { get; set; }
+    public string? CTR { get; set; }
+    public string? KBR { get; set; }
 }

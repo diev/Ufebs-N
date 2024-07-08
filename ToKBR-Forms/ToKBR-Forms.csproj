@@ -7,17 +7,13 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>8.2024.1.11</Version>
-    <Description>Нормализация XML и установка ЗК/КА в документы УФЭБС.</Description>
+    <Version>8.2024.708</Version>
+    <Description>Нормализация XML и установка ЗК/КА в документы УФЭБС перед передачей КБР-Н, GUI.</Description>
     <Company>diev</Company>
     <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
     <NeutralLanguage>ru-RU</NeutralLanguage>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' and '$(ConfigurationName)' == 'Release'">
-    <Exec Command="call PostBuild.cmd $(ProjectPath)" />
-  </Target>
 
   <ItemGroup>
     <ProjectReference Include="..\ToKBR-Lib\ToKBR-Lib.csproj" />
@@ -29,4 +25,11 @@
     </None>
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
 </Project>

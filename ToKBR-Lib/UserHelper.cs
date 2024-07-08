@@ -17,24 +17,35 @@ limitations under the License.
 */
 #endregion
 
+using System.Text.Json;
+
 namespace ToKBR.Lib;
 
 public static class UserHelper
 {
-    public static bool ZK => GetAllowed("Step.1");
-    public static bool KA => GetAllowed("Step.2");
-    public static bool Out => GetAllowed("Step.3");
+    private static readonly Config _config = new();
 
-    public static bool GetAllowed(string key)
+    static UserHelper()
     {
-        string? value = AppContext.GetData(key) as string;
+        string appsettings = Path.ChangeExtension(Environment.ProcessPath!, ".config.json");
 
-        if (string.IsNullOrEmpty(value))
+        if (File.Exists(appsettings))
         {
-            return false;
+            using var read = File.OpenRead(appsettings);
+            _config = JsonSerializer.Deserialize<Config>(read) ?? new(); //TODO
         }
+    }
 
-        string[] allowed = value.Split(',');
+    public static bool ZK => GetAllowed(_config.OPR);
+    public static bool KA => GetAllowed(_config.CTR);
+    public static bool Out => GetAllowed(_config.KBR);
+
+    public static bool GetAllowed(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return false;
+
+        var allowed = value.Split(',');
 
         return
             allowed.Contains("*") ||
