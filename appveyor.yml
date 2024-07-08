@@ -44,8 +44,10 @@ install:
 build_script:
 - cmd: build.cmd
 artifacts:
-- path: '*.zip'
-  name: AppZip
+- path: 'ToKBR-v*.zip'
+  name: CliAppZip
+- path: 'ToKBR-Forms-v*.zip'
+  name: GuiAppZip
 deploy:
 - provider: GitHub
   tag: v$(APPVEYOR_BUILD_VERSION)
@@ -53,7 +55,7 @@ deploy:
   description: '* $(APPVEYOR_REPO_COMMIT_MESSAGE)\n\nBuild #$(APPVEYOR_BUILD_NUMBER) by AppVeyor $(BuildDate)'
   auth_token:
     secure: Oyf/ccEamPwfWLPEZQlf9hPfhGGXu3Kqnmt9saeaTMH2OE6OR0tAt2JkDl/FRR9o
-  artifact: AppZip
+  artifact: CliAppZip,GuiAppZip
   force_update: true
   on:
     branch:
