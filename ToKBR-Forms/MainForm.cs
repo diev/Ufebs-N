@@ -19,6 +19,8 @@ limitations under the License.
 
 using ToKBR.Lib;
 
+using static System.Net.Mime.MediaTypeNames;
+
 namespace ToKBR.Forms;
 
 public partial class MainForm : Form
@@ -88,9 +90,10 @@ public partial class MainForm : Form
         if (FileInDialog.ShowDialog() == DialogResult.OK)
         {
             string file = FileInDialog.FileName;
-            string zk = PathHelper.GetZKFileName(file);
-            string ka = PathHelper.GetKAFileName(file);
-            string kbr = PathHelper.GetOutFileName(file);
+            string ext = Path.GetExtension(file);
+            string zk = PathHelper.GetZKFileName(Path.ChangeExtension(file, "zk" + ext));
+            string ka = PathHelper.GetKAFileName(Path.ChangeExtension(zk, "ka" + ext));
+            string kbr = PathHelper.GetOutFileName(ka);
 
             try
             {
@@ -126,8 +129,9 @@ public partial class MainForm : Form
         if (FileZKDialog.ShowDialog() == DialogResult.OK)
         {
             string zk = FileZKDialog.FileName;
-            string ka = PathHelper.GetKAFileName(zk);
-            string kbr = PathHelper.GetOutFileName(zk);
+            string ext = Path.GetExtension(zk);
+            string ka = PathHelper.GetKAFileName(Path.ChangeExtension(zk, "ka" + ext));
+            string kbr = PathHelper.GetOutFileName(ka);
 
             try
             {

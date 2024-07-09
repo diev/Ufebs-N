@@ -5,7 +5,7 @@
     <RootNamespace>ToKBR.Lib</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>8.2024.708</Version>
+    <Version>8.2024.709</Version>
     <Description>Нормализация XML и установка ЗК/КА в документы УФЭБС.</Description>
     <Company>diev</Company>
     <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
@@ -15,6 +15,12 @@
 
   <ItemGroup>
     <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Config.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

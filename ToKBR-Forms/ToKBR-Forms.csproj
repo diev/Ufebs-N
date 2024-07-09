@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>8.2024.708</Version>
+    <Version>8.2024.709</Version>
     <Description>Нормализация XML и установка ЗК/КА в документы УФЭБС перед передачей КБР-Н, GUI.</Description>
     <Company>diev</Company>
     <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
@@ -21,6 +21,9 @@
 
   <ItemGroup>
     <None Update="file.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ToKBR-Forms.config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

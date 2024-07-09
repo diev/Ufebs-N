@@ -53,12 +53,16 @@ internal class Program
 
             if (file.EndsWith(".zk.ka.xml", StringComparison.OrdinalIgnoreCase))
             {
+                //3 KBR
                 Console.WriteLine(@$"Роль 3: отправка KBR - проверка КА в ""{file}""");
                 Transformator.KbrCheck(file);
-                Console.WriteLine(@$"Конверт ""{file}"" с КА готов к отправке.");
+                string kbr = PathHelper.GetOutFileName(file);
+                Transformator.KbrRole(file, kbr);
+                Console.WriteLine(@$"Конверт ""{kbr}"" с КА готов к отправке.");
             }
             else if (file.EndsWith(".zk.xml", StringComparison.OrdinalIgnoreCase))
             {
+                //2 CTR
                 Console.WriteLine(@$"Роль 2: контролер CTR - установка КА в ""{file}""");
                 Transformator.CtrCheck(file);
                 string ka = Path.ChangeExtension(file, "ka" + ext);
@@ -67,6 +71,7 @@ internal class Program
             }
             else if (file.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
             {
+                //1 OPR
                 Console.WriteLine(@$"Роль 1: операционист OPR - установка ЗК в ""{file}""");
                 Transformator.OprCheck(file);
                 string zk = Path.ChangeExtension(file, "zk" + ext);

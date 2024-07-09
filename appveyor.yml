@@ -28,9 +28,11 @@ dotnet_csproj:
   informational_version: '{version}'
 install:
 - ps: >-
-    $src = "ToKBR"
+    $cli = "ToKBR"
 
-    [XML]$xml = Get-Content "$src\$src.csproj"
+    $gui = "ToKBR-Forms"
+
+    [XML]$xml = Get-Content "$cli\$cli.csproj"
 
     Update-AppveyorBuild -Version "$($xml.Project.PropertyGroup.Version[0]).$env:APPVEYOR_BUILD_NUMBER"
 
@@ -38,14 +40,18 @@ install:
 
     $env:BuildDate = $CommitDateTime.ToString('yyyy-MM-dd')
 
-    $env:AppZip = "$src-v$env:APPVEYOR_BUILD_VERSION.zip"
+    $env:CliAppZip = "$cli-v$env:APPVEYOR_BUILD_VERSION.zip"
+
+    $env:GuiAppZip = "$gui-v$env:APPVEYOR_BUILD_VERSION.zip"
 
     Write-Host "Building v$env:APPVEYOR_BUILD_VERSION dated $env:BuildDate"
 build_script:
 - cmd: build.cmd
 artifacts:
-- path: '*.zip'
-  name: AppZip
+- path: 'ToKBR-v*.zip'
+  name: CliAppZip
+- path: 'ToKBR-Forms-v*.zip'
+  name: GuiAppZip
 deploy:
 - provider: GitHub
   tag: v$(APPVEYOR_BUILD_VERSION)
@@ -53,7 +59,7 @@ deploy:
   description: '* $(APPVEYOR_REPO_COMMIT_MESSAGE)\n\nBuild #$(APPVEYOR_BUILD_NUMBER) by AppVeyor $(BuildDate)'
   auth_token:
     secure: Oyf/ccEamPwfWLPEZQlf9hPfhGGXu3Kqnmt9saeaTMH2OE6OR0tAt2JkDl/FRR9o
-  artifact: /.*\.zip/
+  artifact: CliAppZip,GuiAppZip
   force_update: true
   on:
     branch:

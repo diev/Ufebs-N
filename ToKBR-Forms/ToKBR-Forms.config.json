@@ -1,0 +1,12 @@
+{
+  "IN": ".",
+  "ZK": ".",
+  "KA": ".",
+  "OUT": "OUT",
+  "Backup": "Backup",
+  "Temp": "Temp",
+  "Delete": false,
+  "OPR": "*",
+  "CTR": "*",
+  "KBR": "*"
+}

@@ -234,7 +234,7 @@ public static class Transformator
         xml.Load(sourceFileName);
 
         var root = xml.DocumentElement
-            ?? throw new Exception("Неполный XML: нет Root.");
+            ?? throw new Exception("Файл XML не содержит корневого элемента.");
 
         if (root.LocalName.Equals("SigEnvelope",
             StringComparison.OrdinalIgnoreCase))
@@ -343,13 +343,13 @@ public static class Transformator
                 {
                     // ZK?
                     var zk = ed.FirstChild
-                        ?? throw new Exception("Файл XML не содержит элементов.");
+                        ?? throw new Exception($"Файл XML не содержит элементов в {ed.LocalName}.");
 
                     if (zk.LocalName.Equals("SigValue", StringComparison.OrdinalIgnoreCase))
                         countZK++;
                 }
                 else // unknown
-                    throw new Exception($"Файл XML не содержит {ed.LocalName} в {rootName}.");
+                    throw new Exception($"Файл XML содержит неизвестный {ed.LocalName} в {rootName}.");
             }
 
             if (countZK == count)
@@ -365,7 +365,7 @@ public static class Transformator
                 "Файл XML уже конверт с КА - передайте его на отправку в КБР.");
         else // unknown
             throw new Exception(
-                $"Файл XML содержит {rootName} в корне XML.");
+                $"Файл XML содержит неизвестный {rootName} в корне XML.");
     }
 
     /// <summary>
@@ -380,6 +380,10 @@ public static class Transformator
 
         string normal = PathHelper.GetNormalFileName(sourceFileName);
         string p7d = PathHelper.GetSignFileName(sourceFileName);
+        string bak = PathHelper.GetBackupFileName(sourceFileName);
+
+        if (!PathHelper.AreSame(sourceFileName, bak))
+            File.Copy(sourceFileName, bak, true);
 
         int count = Normalize(sourceFileName, normal);
 
@@ -447,13 +451,13 @@ public static class Transformator
                 {
                     // ZK?
                     var zk = ed.FirstChild
-                        ?? throw new Exception("Файл XML не содержит элементов.");
+                        ?? throw new Exception($"Файл XML не содержит элементов в {ed.LocalName}.");
 
                     if (!zk.LocalName.Equals("SigValue", StringComparison.OrdinalIgnoreCase))
                         countZK++;
                 }
                 else // unknown
-                    throw new Exception($"Файл XML не содержит {ed.LocalName} в {rootName}.");
+                    throw new Exception($"Файл XML содержит неизвестный {ed.LocalName} в {rootName}.");
             }
 
             if (countZK == 0)
@@ -465,7 +469,7 @@ public static class Transformator
         else if (rootName.Equals("SigEnvelope", StringComparison.OrdinalIgnoreCase))
             throw new Exception("Файл XML уже конверт с КА - передайте его на отправку в КБР.");
         else // unknown
-            throw new Exception($"Файл XML содержит {rootName} в корне XML.");
+            throw new Exception($"Файл XML содержит неизвестный {rootName} в корне XML.");
     }
 
     /// <summary>
@@ -534,7 +538,7 @@ public static class Transformator
                 {
                     // ZK?
                     var zk = ed.FirstChild
-                        ?? throw new Exception("Файл XML не содержит элементов.");
+                        ?? throw new Exception($"Файл XML не содержит элементов в {ed.LocalName}.");
 
                     if (!zk.LocalName.Equals("SigValue", StringComparison.OrdinalIgnoreCase))
                         countZK++;
@@ -542,7 +546,7 @@ public static class Transformator
                     //TODO Check ZK
                 }
                 else // unknown
-                    throw new Exception($"Файл XML не содержит {ed.LocalName} в {rootName}.");
+                    throw new Exception($"Файл XML содержит неизвестный {ed.LocalName} в {rootName}.");
             }
 
             if (countZK == 0)
@@ -558,21 +562,33 @@ public static class Transformator
         {
 #if DEBUG
             string macValue = root.ChildNodes[0]?.FirstChild?.InnerText
-                ?? throw new Exception("Файл XML не содержит 'SigEnvelope.SigContainer.MACValue'.");
+                ?? throw new Exception("Файл XML не содержит SigEnvelope.SigContainer.MACValue.");
 
             string senObject = root.ChildNodes[1]?.InnerText
-                ?? throw new Exception("Файл XML не содержит 'SigEnvelope.Object'.");
+                ?? throw new Exception("Файл XML не содержит SigEnvelope.Object.");
 
-            var ka = Convert.FromBase64String(macValue);
+            bool demo = !File.Exists(SpkiUtl.Exe);
+            string src = PathHelper.GetTempFileName(sourceFileName + ".src.p7d");
+
+            if (demo)
+            {
+                var ka = macValue; // "DEMO-SIGN-KA"
+                File.WriteAllText(src, ka);
+            }
+            else
+            {
+                var ka = Convert.FromBase64String(macValue);
+                File.WriteAllBytes(src, ka);
+
+                //TODO Check KA
+            }
+
+            src = PathHelper.GetTempFileName(sourceFileName + ".src.zk.xml");
             var data = Convert.FromBase64String(senObject);
-
-            File.WriteAllBytes(sourceFileName + ".src.p7d", ka);
-            File.WriteAllBytes(sourceFileName + ".src.zk.xml", data);
-
-            //TODO Check KA
+            File.WriteAllBytes(src, data);
 
             XmlDocument parseXml = new();
-            parseXml.Load(sourceFileName + ".src.zk.xml");
+            parseXml.Load(src);
 
             // XML?
             var parseRoot = parseXml.DocumentElement
@@ -583,14 +599,25 @@ public static class Transformator
                 var sigValue = parseRoot.FirstChild?.InnerText
                     ?? throw new Exception("Файл XML не содержит SigValue.");
 
-                var zk = Convert.FromBase64String(sigValue);
-                File.WriteAllBytes(sourceFileName + ".src.ns.p7d", zk);
+                src = PathHelper.GetTempFileName(sourceFileName + ".src.ns.p7d");
 
+                if (demo)
+                {
+                    var zk = sigValue; // "DEMO-SIGN-ZK"
+                    File.WriteAllText(src, zk);
+                }
+                else
+                {
+                    var zk = Convert.FromBase64String(sigValue);
+                    File.WriteAllBytes(src, zk);
+
+                    //TODO Check ZK
+                }
+                
                 parseRoot.RemoveChild(parseRoot.FirstChild);
-                parseXml.Save(sourceFileName + ".src.xml");
-                Normalize(sourceFileName + ".src.xml", sourceFileName + ".src.ns.xml");
-
-                //TODO Check ZK
+                src = PathHelper.GetTempFileName(sourceFileName + ".src.xml");
+                parseXml.Save(src);
+                Normalize(src, PathHelper.GetTempFileName(sourceFileName + ".src.ns.xml"));
             }
             else if (parseRoot.LocalName.StartsWith("Packet"))
             {
@@ -598,8 +625,8 @@ public static class Transformator
             }
 #endif
         }
-        else // unlnown
-            throw new Exception($"Файл XML содержит {rootName} в корне XML.");
+        else // unknown
+            throw new Exception($"Файл XML содержит неизвестный {rootName} в корне XML.");
     }
 
     /// <summary>
@@ -609,6 +636,14 @@ public static class Transformator
     /// <param name="destFileName">Финальный файл XML со вставленной КА для отправки.</param>
     public static void KbrRole(string sourceFileName, string destFileName)
     {
+        string bak = PathHelper.GetBackupFileName(sourceFileName);
+
+        if (!PathHelper.AreSame(sourceFileName, bak))
+            File.Copy(sourceFileName, bak, true);
+
+        if (PathHelper.AreSame(sourceFileName, destFileName))
+            return;
+
         File.Copy(sourceFileName, destFileName, true);
 
         if (Delete)

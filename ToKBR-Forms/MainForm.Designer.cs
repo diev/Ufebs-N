@@ -117,7 +117,7 @@
             FileInText.Location = new Point(162, 25);
             FileInText.MaxLength = 255;
             FileInText.Name = "FileInText";
-            FileInText.PlaceholderText = "Выберите файл, полученный извне";
+            FileInText.PlaceholderText = "Выберите файл, полученный от исполнителя";
             FileInText.ReadOnly = true;
             FileInText.Size = new Size(407, 23);
             FileInText.TabIndex = 2;
@@ -228,7 +228,7 @@
             OutButton.Name = "OutButton";
             OutButton.Size = new Size(150, 25);
             OutButton.TabIndex = 13;
-            OutButton.Text = "Отправить в КБР";
+            OutButton.Text = "Отправить в КБР-Н";
             OutButton.UseVisualStyleBackColor = true;
             OutButton.Click += OutButton_Click;
             // 
@@ -238,7 +238,7 @@
             FileOutText.Location = new Point(172, 230);
             FileOutText.MaxLength = 255;
             FileOutText.Name = "FileOutText";
-            FileOutText.PlaceholderText = "Файл для отправки в КБР";
+            FileOutText.PlaceholderText = "Файл для отправки в КБР-Н";
             FileOutText.ReadOnly = true;
             FileOutText.Size = new Size(407, 23);
             FileOutText.TabIndex = 15;
@@ -254,17 +254,17 @@
             // 
             // FileZKDialog
             // 
-            FileZKDialog.DefaultExt = "xml";
-            FileZKDialog.Filter = "Файлы XML|*.xml|Файлы с ZK|*.zk.xml|Все файлы|*.*";
+            FileZKDialog.DefaultExt = "zk.xml";
+            FileZKDialog.Filter = "Файлы с ZK|*.zk.xml|Файлы XML|*.xml|Все файлы|*.*";
             FileZKDialog.SupportMultiDottedExtensions = true;
             FileZKDialog.Title = "Выберите файл для установки КА";
             // 
             // FileKADialog
             // 
-            FileKADialog.DefaultExt = "xml";
-            FileKADialog.Filter = "Файлы XML|*.xml|Конверты с KA|*.ka.xml|Все файлы|*.*";
+            FileKADialog.DefaultExt = "ka.xml";
+            FileKADialog.Filter = "Конверты с KA|*.ka.xml|Файлы XML|*.xml|Все файлы|*.*";
             FileKADialog.SupportMultiDottedExtensions = true;
-            FileKADialog.Title = "Выберите файл для отправки";
+            FileKADialog.Title = "Выберите файл для отправки в КБР-Н";
             // 
             // ExitButton
             // 
@@ -370,7 +370,7 @@
             // AllowedStatus
             // 
             AllowedStatus.Name = "AllowedStatus";
-            AllowedStatus.Size = new Size(639, 17);
+            AllowedStatus.Size = new Size(670, 17);
             AllowedStatus.Spring = true;
             AllowedStatus.Text = "Выберите файл кнопкой с \"...\"";
             AllowedStatus.TextAlign = ContentAlignment.MiddleLeft;
@@ -396,7 +396,7 @@
             Controls.Add(OprGroup);
             MinimumSize = new Size(640, 330);
             Name = "MainForm";
-            Text = "Поставить ЗК, КА и отправить в КБР";
+            Text = "Поставить ЗК, КА и отправить в КБР-Н";
             OprGroup.ResumeLayout(false);
             OprGroup.PerformLayout();
             CtrGroup.ResumeLayout(false);

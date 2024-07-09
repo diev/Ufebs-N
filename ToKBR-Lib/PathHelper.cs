@@ -41,7 +41,8 @@ public static class PathHelper
     public static string KA => Directory.CreateDirectory(_config.KA ?? ".").FullName;
     public static string OUT => Directory.CreateDirectory(_config.OUT ?? ".").FullName;
     public static string Temp => Directory.CreateDirectory(_config.Temp ?? ".").FullName;
-    public static string Backup => Directory.CreateDirectory(_config.Backup ?? ".").FullName;
+    public static string Backup => Directory.CreateDirectory(
+        Path.Combine(_config.Backup ?? ".", DateTime.Now.ToString("yyyy-MM-dd"))).FullName;
 
     public static string GetZKFileName(string fileName)
         => Path.Combine(ZK, Path.GetFileName(fileName));
@@ -66,6 +67,9 @@ public static class PathHelper
 
     public static string GetBackupFileName(string fileName)
         => Path.Combine(Backup, Path.GetFileName(fileName));
+
+    public static string GetTempFileName(string fileName)
+        => Path.Combine(Temp, Path.GetFileName(fileName));
 
     public static bool AreSame(string fileName1, string fileName2)
         => Path.GetFullPath(fileName1).Equals(Path.GetFullPath(fileName2),
