@@ -58,7 +58,7 @@ deploy:
   release: $(APPVEYOR_PROJECT_NAME) v$(APPVEYOR_BUILD_VERSION)
   description: '* $(APPVEYOR_REPO_COMMIT_MESSAGE)\n\nBuild #$(APPVEYOR_BUILD_NUMBER) by AppVeyor $(BuildDate)'
   auth_token:
-    secure: Oyf/ccEamPwfWLPEZQlf9hPfhGGXu3Kqnmt9saeaTMH2OE6OR0tAt2JkDl/FRR9o
+    secure: 74qqu+vLxLuUIYPO2rnCxWzUfSt9qRCh/yGXUKb6VlkT7w7fmbNf94V/xTH1t7Nh
   artifact: CliAppZip,GuiAppZip
   force_update: true
   on:

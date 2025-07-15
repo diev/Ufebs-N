@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-Copyright 2022-2024 Dmitrii Evdokimov
+Copyright 2022-2025 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,10 +36,10 @@ public static class PathHelper
         }
     }
 
-    public static string IN => Directory.CreateDirectory(_config.IN ?? ".").FullName;
-    public static string ZK => Directory.CreateDirectory(_config.ZK ?? ".").FullName;
-    public static string KA => Directory.CreateDirectory(_config.KA ?? ".").FullName;
-    public static string OUT => Directory.CreateDirectory(_config.OUT ?? ".").FullName;
+    public static string IN => _config.IN ?? ".";
+    public static string ZK => _config.ZK ?? ".";
+    public static string KA => _config.KA ?? ".";
+    public static string OUT => _config.OUT ?? ".";
     public static string Temp => Directory.CreateDirectory(_config.Temp ?? ".").FullName;
     public static string Backup => Directory.CreateDirectory(
         Path.Combine(_config.Backup ?? ".", DateTime.Now.ToString("yyyy-MM-dd"))).FullName;

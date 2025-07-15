@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <TargetFrameworks>net8.0-windows;net9.0-windows</TargetFrameworks>
     <RootNamespace>ToKBR</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>8.2024.709</Version>
+    <Version>9.2025.715</Version>
     <Description>Нормализация XML и установка ЗК/КА в документы УФЭБС перед передачей КБР-Н, CLI.</Description>
     <Company>diev</Company>
-    <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
+    <Copyright>2022-2025 Dmitrii Evdokimov</Copyright>
     <NeutralLanguage>ru-RU</NeutralLanguage>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>

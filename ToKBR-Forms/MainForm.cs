@@ -1,6 +1,6 @@
 #region License
 /*
-Copyright 2022-2024 Dmitrii Evdokimov
+Copyright 2022-2025 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,6 @@ limitations under the License.
 #endregion
 
 using ToKBR.Lib;
-
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ToKBR.Forms;
 
@@ -207,6 +205,8 @@ public partial class MainForm : Form
 
         try
         {
+            Directory.CreateDirectory(PathHelper.ZK);
+
             Transformator.OprRole(file, zk);
 
             if (File.Exists(zk))
@@ -238,7 +238,7 @@ public partial class MainForm : Form
         catch (Exception ex)
         {
             MessageBox.Show(ex.Message,
-                "Ошибка!", 
+                "Ошибка!",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -250,6 +250,8 @@ public partial class MainForm : Form
 
         try
         {
+            Directory.CreateDirectory(PathHelper.KA);
+
             Transformator.CtrRole(zk, ka);
 
             if (File.Exists(ka))
@@ -278,7 +280,7 @@ public partial class MainForm : Form
         catch (Exception ex)
         {
             MessageBox.Show(ex.Message,
-                "Ошибка!", 
+                "Ошибка!",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -290,6 +292,8 @@ public partial class MainForm : Form
 
         try
         {
+            Directory.CreateDirectory(PathHelper.OUT);
+
             Transformator.KbrCheck(ka);
             Transformator.KbrRole(ka, kbr);
 
@@ -313,7 +317,7 @@ public partial class MainForm : Form
         catch (Exception ex)
         {
             MessageBox.Show(ex.Message,
-                "Ошибка!", 
+                "Ошибка!",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
