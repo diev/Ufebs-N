@@ -50,7 +50,7 @@
 
 ## Requirements / Требования
 
-- .NET 8 Desktop Runtime
+- .NET 8-9 Desktop Runtime
 
 ## License / Лицензия
 

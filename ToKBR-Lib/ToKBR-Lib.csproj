@@ -5,7 +5,7 @@
     <RootNamespace>ToKBR.Lib</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>9.2025.715</Version>
+    <Version>9.2025.716</Version>
     <Description>Нормализация XML и установка ЗК/КА в документы УФЭБС.</Description>
     <Company>diev</Company>
     <Copyright>2022-2025 Dmitrii Evdokimov</Copyright>
@@ -30,4 +30,5 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>embedded</DebugType>
   </PropertyGroup>
+
 </Project>
