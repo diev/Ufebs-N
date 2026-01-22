@@ -1,5 +1,6 @@
 @echo off
 call :init
+if exist bin rd /s /q bin
 
 set app1=ToKBR
 set app2=ToKBR-Forms
@@ -11,7 +12,7 @@ exit /b 0
 :pack
 rem %1 - app
 rem %2 - target
-if exist bin rd /s /q bin
+if not exist %1 goto :eof
 for %%i in (%1\*.csproj) do set prj=%%~dpnxi
 
 rem Build matrix
@@ -24,13 +25,15 @@ set option=2
 rem call :bin %1 %option% %prj% net8.0%2 win-x86
 rem call :bin %1 %option% %prj% net9.0%2 win-x86
 
-call :bin %1 %option% %prj% net8.0%2 win-x64
-call :bin %1 %option% %prj% net9.0%2 win-x64
+rem call :bin %1 %option% %prj% net8.0%2 win-x64
+rem call :bin %1 %option% %prj% net9.0%2 win-x64
+call :bin %1 %option% %prj% net10.0%2 win-x64
 
 rem Linux
 set option=4
 rem call :bin %1 %option% %prj% net8.0 linux-x64
 rem call :bin %1 %option% %prj% net9.0 linux-x64
+rem call :bin %1 %option% %prj% net10.0 linux-x64
 
 call :version_txt %1 %prj% > bin\version.txt
 
@@ -53,11 +56,11 @@ rem %4 - net
 rem %5 - x86/x64
 echo === Build %1 %4 %5 ===
 rem win
-if /%2/==/1/ dotnet publish %3 -o bin\%4.%5 -f %4 -r %5
-if /%2/==/2/ dotnet publish %3 -o bin\%4.%5 -f %4 -r %5 -p:PublishSingleFile=true --no-self-contained
-if /%2/==/3/ dotnet publish %3 -o bin\%4.%5 -f %4 -r %5 -p:PublishSingleFile=true
+if /%2/==/1/ dotnet publish %3 -o bin\%4.%5\%1 -f %4 -r %5
+if /%2/==/2/ dotnet publish %3 -o bin\%4.%5\%1 -f %4 -r %5 -p:PublishSingleFile=true --no-self-contained
+if /%2/==/3/ dotnet publish %3 -o bin\%4.%5\%1 -f %4 -r %5 -p:PublishSingleFile=true
 rem linux
-if /%2/==/4/ dotnet publish %3 -o bin\%4.%5 -f %4 -r %5 --self-contained
+if /%2/==/4/ dotnet publish %3 -o bin\%4.%5\%1 -f %4 -r %5 --self-contained
 
 rem win
 rem if /%2/==/1/ del bin\%4.%5\appsettings.json

@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net8.0-windows;net9.0-windows</TargetFrameworks>
+    <TargetFrameworks>net8.0-windows;net9.0-windows;net10.0-windows</TargetFrameworks>
     <RootNamespace>ToKBR.Forms</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>9.2025.716</Version>
+    <Version>10.2026.122</Version>
     <Description>Нормализация XML и установка ЗК/КА в документы УФЭБС перед передачей КБР-Н, GUI.</Description>
     <Company>diev</Company>
-    <Copyright>2022-2025 Dmitrii Evdokimov</Copyright>
+    <Copyright>2022-2026 Dmitrii Evdokimov</Copyright>
     <NeutralLanguage>ru-RU</NeutralLanguage>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
